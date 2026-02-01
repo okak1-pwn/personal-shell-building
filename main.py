@@ -6,6 +6,7 @@ import shlex #Built to manage ' ' " " and \ for shell syntax
 
 def initialize_console() -> None:
     sys.stdout.write("$ ")
+    sys.stdout.flush()
     command = sys.stdin.readline().strip()
     check_command(command)
 
