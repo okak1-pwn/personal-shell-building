@@ -38,7 +38,7 @@ def main():
             initialize_console()
             time.sleep(0.1)
     except KeyboardInterrupt:
-        print("exiting")
+        print("\nexiting")
 
 
 if __name__ == "__main__":
