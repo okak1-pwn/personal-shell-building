@@ -1,8 +1,9 @@
 import sys
 import time
-from Logic import handle_executables
+from Logic import execute, redirect_output_handling
 from Commands import *
 import shlex #Built to manage ' ' " " and \ for shell syntax
+
 
 def initialize_console() -> None:
     sys.stdout.write("$ ")
@@ -15,18 +16,19 @@ def check_command(command: str) -> None:
 
     if not parts:
         return
+
+
+    if any(op in parts for op in [">","1>","2>", ">>", "1>>", "2>>"]):
+        redirect_output_handling(parts)
+        return
+
     cmd, *args = parts
+    stdout, stderr = execute(cmd, args)
 
-    if cmd in SYS_COMMANDS:
-        func = SYS_COMMANDS[cmd]["func"]
-        if SYS_COMMANDS[cmd]["args"]:
-            func(args)
-        else:
-            func()
-        return
-
-    if handle_executables(cmd, args):
-        return
+    if stdout:
+        print(stdout, end="")
+    if stderr:
+        sys.stderr.write(stderr)
 
 
 

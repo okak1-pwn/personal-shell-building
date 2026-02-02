@@ -1,15 +1,18 @@
 import sys
 import os
+from pathlib import Path
 from Register import register, SYS_COMMANDS
 from Logic import check_path
 
 @register(name="echo",kind="builtin",arg=True)
-def echo(args) -> None:
-    print(*args)
+def echo(args) -> str:
+    return ' '.join(args)+"\n"
+
 
 @register(name="exit",kind="builtin",arg=True)
 def cmd_exit(args) -> None:
     sys.exit(0)
+
 
 @register(name="type", kind="builtin",arg=True)
 def func_type(args) -> None:
@@ -33,28 +36,30 @@ def func_type(args) -> None:
 
     print(f"{args[0]}: not found")
 
+
 @register(name="pwd",kind="builtin",arg=False)
-def pwd() -> None:
-    print(os.getcwd())
+def pwd() -> str:
+    return str(Path.cwd())+"\n"
+
+
 
 @register(name="cd",kind="builtin",arg=True)
-def cd(args: list) -> None:
+def cd(args: list[str]) -> str:
     if len(args) > 1:
-        print("cd: too many arguments")
-        return
+        return "cd: too many arguments\n"
+
 
     directory = args[0] if args else "~"
-    expanded_path = os.path.expanduser(directory)
+    expanded_path = Path(directory).expanduser().resolve()
 
-    '''if not os.path.isdir(expanded_path):
-        print(f"cd: not a directory: {args[0]}")
-        return'''
 
     try:
         os.chdir(expanded_path)
     except FileNotFoundError:
-        print(f"cd: {args[0]}: No such file or directory")
+        return f"cd: {args[0]}: No such file or directory\n"
     except NotADirectoryError:
-        print(f"cd: {args[0]} not a directory")
+        return f"cd: {args[0]} not a directory\n"
     except PermissionError:
-        print(f"cd: {args[0]} permission denied")
+        return f"cd: {args[0]} permission denied\n"
+
+    return ""
